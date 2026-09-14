@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Юлия — Вязаные аксессуары ручной работы</title>
+  
+  <style>
+    :root {
+      --bg-orange: #ff7e5f;
+      --bg-yellow: #feb47b;
+      --accent-purple: #8e44ad;
+      --accent-green: #2ecc71;
+      --accent-orange: #ff6b6b;
+      --text-dark: #2c3e50;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-dark);
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-orange), var(--bg-yellow));
+      background-attachment: fixed;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 60px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('background.png') center/cover no-repeat;
+      opacity: 0.15;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Шапка и меню */
+    header {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      padding: 15px 20px;
+      z-index: 100;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .menu-toggle {
+      background: var(--accent-purple);
+      color: white;
+      border: none;
+      font-size: 24px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .menu-toggle:hover {
+      transform: scale(1.05);
+      background: var(--accent-orange);
+    }
+
+    .side-nav {
+      position: fixed;
+      top: 0; left: -300px;
+      width: 280px; height: 100%;
+      background: rgba(44, 62, 80, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 60px 30px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 101;
+      transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+      box-shadow: 5px 0 25px rgba(0,0,0,0.3);
+    }
+
+    .side-nav.active {
+      left: 0;
+    }
+
+    .close-nav {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    .side-nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: 600;
+      transition: color 0.3s, transform 0.2s;
+    }
+
+    .side-nav a:hover {
+      color: var(--bg-yellow);
+      transform: translateX(8px);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.4s;
+      z-index: 100;
+    }
+
+    .overlay.active {
+      opacity: 1; visibility: visible;
+    }
+
+    /* Эффекты Плавного Появления при Скролле */
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+      will-change: opacity, transform;
+    }
+
+    .fade-in-section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Секции */
+    section {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 25px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    section:first-of-type {
+      margin-top: 80px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: var(--accent-purple);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* О себе */
+    #about {
+      padding: 20px;
+    }
+
+    .about-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .about-img {
+      flex: 0 0 180px;
+      max-width: 250px;
+      border-radius: 12px;
+      width: 100%;
+      object-fit: cover;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+      border: 3px solid white;
+    }
+
+    .about-text {
+      flex: 1 1 250px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* УТП */
+    .utp-card {
+      background: linear-gradient(135deg, #ffffff, #fff3e0);
+      border: 2px dashed var(--accent-orange);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.15);
+    }
+
+    .utp-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--accent-orange);
+      margin-bottom: 8px;
+    }
+
+    .utp-text {
+      font-size: 16px;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    /* Виджет цвета */
+    .interactive-widget {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .widget-title {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: var(--accent-purple);
+    }
+
+    .preview-box {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 15px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      border: 3px solid white;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.3s ease;
+    }
+
+    .color-picker {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .color-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .color-btn:hover {
+      transform: scale(1.2);
+    }
+
+    /* Сетка Изделий и Отзывов */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .grid-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      cursor: pointer;
+      aspect-ratio: 1;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border: 3px solid white;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .grid-item:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .grid-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .grid-item:hover img {
+      transform: scale(1.1);
+    }
+
+    /* Стили Новинки */
+    .new-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .new-gallery {
+      display: flex;
+      gap: 12px;
+      flex: 1 1 280px;
+    }
+
+    .new-img-item {
+      flex: 1;
+      height: 220px;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 2px solid #fff;
+    }
+
+    .new-img-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .new-img-item:hover img {
+      transform: scale(1.08);
+    }
+
+    .new-info {
+      flex: 1 1 250px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .new-badge {
+      display: inline-block;
+      background: var(--accent-orange);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      align-self: flex-start;
+    }
+
+    .new-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .new-desc {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .new-price-wrap {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    /* Стили Прайса */
+    .price-info-box {
+      background: #fff;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      border-left: 5px solid var(--accent-purple);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .price-info-box ul {
+      margin-left: 20px;
+      margin-top: 5px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+    }
+
+    .product-img-wrap {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .product-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-img-wrap img {
+      transform: scale(1.06);
+    }
+
+    .product-info {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .product-desc {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 15px;
+      flex-grow: 1;
+    }
+
+    .product-bottom {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .price-badge {
+      background: #fbf3d5;
+      color: #5d4037;
+      font-weight: 700;
+      font-size: 16px;
+      padding: 6px 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    /* Информационные карточки */
+    .info-card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .info-card ul {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+
+    .social-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .btn-social {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 30px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .btn-social:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+
+    .btn-tg { background: #0088cc; }
+    .btn-insta { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .btn-vk { background: #0077ff; }
+
+    /* Floating CTA */
+    .floating-cta {
+      display: none;
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-purple);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      z-index: 99;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    /* Модальное окно */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 200;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 85vh;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+    }
+
+    .modal.active img {
+      transform: scale(1);
+    }
+
+    @media (max-width: 600px) {
+      section { padding: 15px; margin: 15px 10px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .products-grid { grid-template-columns: 1fr; }
+      .about-container { justify-content: center; text-align: center; }
+      .about-img { flex: 0 0 150px; }
+      .floating-cta { display: block; }
+      .new-gallery { flex-direction: row; }
+      .new-img-item { height: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button class="menu-toggle" id="menuOpen">&#9776;</button>
+  </header>
+
+  <div class="overlay" id="overlay"></div>
+
+  <nav class="side-nav" id="sideNav">
+    <button class="close-nav" id="menuClose">&times;</button>
+    <a href="#about">О себе</a>
+    <a href="#works">Изделия</a>
+    <a href="#utp">Специальное предложение</a>
+    <a href="#new-items">Новинки 🔥</a>
+    <a href="#price">Прайс</a>
+    <a href="#reviews">Отзывы</a>
+    <a href="#order">Как сделать заказ</a>
+    <a href="#payment">Оплата</a>
+    <a href="#shipping">Доставка</a>
+  </nav>
+
+  <section id="about" class="fade-in-section">
+    <h2>О себе</h2>
+    <div class="about-container">
+      <img src="profile.png" alt="Юлия" class="about-img">
+      <div class="about-text">
+        <p>Привет! Меня зовут <strong>Юлия</strong>, мне 28 лет. По профессии я химик-технолог. До декрета работала по специальности, потом ушла в декрет и в найм не вернулась — пытаюсь строить свое дело.</p>
+        <br>
+        <p>Вяжу около трёх лет. Сначала вязала корзины и органайзеры, так как постоянно дома и очень хотелось все разместить по полочкам. Сейчас перешла на косметички и сумочки — именно яркие и акцентные, для поднятия настроения их обладательницам!</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="works" class="fade-in-section">
+    <h2>Изделия</h2>
+    <div class="grid">
+      <script>
+        for(let i = 1; i <= 11; i++) {
+          document.write(`
+            <div class="grid-item" onclick="openModal('work${i}.png')">
+              <img src="work${i}.png" alt="Изделие ${i}">
+            </div>
+          `);
+        }
+      </script>
+    </div>
+  </section>
+
+  <section id="utp" class="fade-in-section">
+    <h2>Специальное предложение</h2>
+    <div class="utp-card">
+      <div class="utp-title">Подарок к каждому заказу</div>
+      <div class="utp-text">Обвес цветок в подарок в цветовой гамме косметички</div>
+    </div>
+
+    <div class="interactive-widget">
+      <div class="widget-title">Примерьте варианты цвета:</div>
+      <div class="preview-box">
+        <img id="previewImage" src="orange.png" alt="Превью сумочки">
+      </div>
+      <div class="color-picker">
+        <div class="color-btn" style="background: #ff7e5f;" title="Оранжевый" onclick="changeImage('orange.png')"></div>
+        <div class="color-btn" style="background: #ff6b81;" title="Розовый" onclick="changeImage('pink.png')"></div>
+        <div class="color-btn" style="background: linear-gradient(135deg, #2ecc71 50%, #8e44ad 50%);" title="Зеленый + Фиолетовый" onclick="changeImage('purple+green.png')"></div>
+        <div class="color-btn" style="background: #2ecc71;" title="Зеленый" onclick="changeImage('green.png')"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="new-items" class="fade-in-section">
+    <h2>Новинки 🔥</h2>
+    <div class="new-card">
+      <div class="new-gallery">
+        <div class="new-img-item" onclick="openModal('new1.png')">
+          <img src="new1.png" alt="Меховая косметичка - фото 1">
+        </div>
+        <div class="new-img-item" onclick="openModal('new2.png')">
+          <img src="new2.png" alt="Меховая косметичка - фото 2">
+        </div>
+      </div>
+      <div class="new-info">
+        <span class="new-badge">Новинка</span>
+        <div class="new-title">Меховая косметичка</div>
+        <div class="new-desc">
+          • Фермуар: 18 см<br>
+          • Размер: S<br>
+          • Очень пушистая и тактильная ✨
+        </div>
+        <div class="new-price-wrap">
+          <div class="price-badge">1 900 ₽</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="price" class="fade-in-section">
+    <h2>Прайс</h2>
+
+    <div class="price-info-box">
+      <strong>Цена косметички зависит от:</strong> размера и вязки в одну или две нити.<br>
+      <em>Дополнительно можно выбрать:</em> узор (обычная / обратная галочка), наличие ручки.
+    </div>
+
+    <div class="price-info-box" style="border-left-color: var(--accent-orange);">
+      <strong>Для каждого индивидуального заказа цена рассчитывается отдельно и зависит от:</strong>
+      <ul>
+        <li>Размера корзины</li>
+        <li>Формы</li>
+        <li>Материала (хлопок / полиэфир)</li>
+        <li>Наличия крышки</li>
+      </ul>
+      <br>
+      <em>Узнать стоимость корзины по индивидуальным размерам можно в директе или Telegram!</em>
+    </div>
+
+    <div class="products-grid">
+
+      <div class="product-card">
+        <div class="product-img-wrap" onclick="openModal('price2.png')">
+          <img src="price2.png" alt="Косметичка S">
+        </div>
+        <div class="product-info">
+          <div class="product-title">Косметичка S</div>
+          <div class="product-desc">
+            • С фермуаром 16 см<br>
+            • Овальное дно<br>
+            • Длинная сторона: 20 см, высота: 12 см<br>
+            • Узор: обратная галочка
+          </div>
+          <div class="product-bottom">
+            <div class="price-badge">от 1 900 ₽</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-wrap" onclick="openModal('price3.png')">
+          <img src="price3.png" alt="Косметичка M">
+        </div>
+        <div class="product-info">
+          <div class="product-title">Косметичка M</div>
+          <div class="product-desc">
+            • С фермуаром 18 см<br>
+            • Прямоугольное дно (19×12 см)<br>
+            • Узор: галочка<br>
+            • Есть удобная ручка
+          </div>
+          <div class="product-bottom">
+            <div class="price-badge">2 300 ₽</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-wrap" onclick="openModal('price4.png')">
+          <img src="price4.png" alt="Косметичка L">
+        </div>
+        <div class="product-info">
+          <div class="product-title">Косметичка L</div>
+          <div class="product-desc">
+            • С фермуаром 20 см<br>
+            • Овальное дно<br>
+            • Длинная сторона: 30 см, высота: 15 см<br>
+            • Связана в две нити, узор: обратная галочка
+          </div>
+          <div class="product-bottom">
+            <div class="price-badge">3 900 ₽</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-wrap" onclick="openModal('price6.png')">
+          <img src="price6.png" alt="Лежанка для питомцев">
+        </div>
+        <div class="product-info">
+          <div class="product-title">Лежанка для питомцев</div>
+          <div class="product-desc">
+            • Комфортное место для любимых домашних животных<br>
+            • Основание: 70×40 см<br>
+            • Высота: 17 см
+          </div>
+          <div class="product-bottom">
+            <div class="price-badge">7 500 ₽</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-wrap" onclick="openModal('price7.png')">
+          <img src="price7.png" alt="Салфетница">
+        </div>
+        <div class="product-info">
+          <div class="product-title">Салфетница</div>
+          <div class="product-desc">
+            • Стильный аксессуар для дома<br>
+            • Основание: 12×23 см<br>
+            • Высота: 8 см
+          </div>
+          <div class="product-bottom">
+            <div class="price-badge">1 700 ₽</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-wrap" onclick="openModal('price8.png')">
+          <img src="price8.png" alt="Корзина для ватных палочек">
+        </div>
+        <div class="product-info">
+          <div class="product-title">Корзина для палочек/дисков</div>
+          <div class="product-desc">
+            • Удобный и эстетичный органайзер для ванной комнаты<br>
+            • С фирменным кожаным ярлычком
+          </div>
+          <div class="product-bottom">
+            <div class="price-badge">800 ₽</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-wrap" onclick="openModal('price9.png')">
+          <img src="price9.png" alt="Корзина с крышкой">
+        </div>
+        <div class="product-info">
+          <div class="product-title">Корзина с крышкой</div>
+          <div class="product-desc">
+            • Прямоугольная вместительная корзина<br>
+            • Основание: 20×20 см<br>
+            • Высота: 13 см
+          </div>
+          <div class="product-bottom">
+            <div class="price-badge">2 700 ₽</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="reviews" class="fade-in-section">
+    <h2>Отзывы</h2>
+    <div class="grid">
+      <script>
+        for(let i = 1; i <= 10; i++) {
+          document.write(`
+            <div class="grid-item" onclick="openModal('review${i}.png')">
+              <img src="review${i}.png" alt="Отзыв ${i}">
+            </div>
+          `);
+        }
+      </script>
+    </div>
+  </section>
+
+  <section id="order" class="fade-in-section">
+    <h2>Как сделать заказ</h2>
+    <div class="info-card">
+      <p><strong>Напишите мне в директ или Telegram:</strong></p>
+      <br>
+      <ol>
+        <li>Если Вам нужно изделие из наличия, то пришлите его фото.</li>
+        <li>Если Вы хотите изделие по индивидуальным размерам, то пришлите:
+          <ul>
+            <li>размер</li>
+            <li>форму</li>
+            <li>желаемый цвет и материал</li>
+            <li>собственные пожелания (крышка, рисунок)</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="social-buttons">
+        <a href="https://t.me/apelsinchik72" target="_blank" class="btn-social btn-tg">Telegram</a>
+        <a href="https://www.instagram.com/julia.kolgan" target="_blank" class="btn-social btn-insta">Instagram</a>
+        <a href="https://vk.ru/julia.kolgan" target="_blank" class="btn-social btn-vk">ВКонтакте</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="payment" class="fade-in-section">
+    <h2>Оплата</h2>
+    <div class="info-card">
+      <ul>
+        <li><strong>Для изделий из наличия:</strong> предоплата 100%</li>
+        <li><strong>Для индивидуальных заказов:</strong> предоплата 50%, по готовности я высылаю фото, далее оплачивается оставшаяся сумма.</li>
+      </ul>
+      <br>
+      <p><strong>Изготовление:</strong> 3–7 дней</p>
+      <p><strong>Изделия из наличия отправляю:</strong> в течение суток</p>
+    </div>
+  </section>
+
+  <section id="shipping" class="fade-in-section">
+    <h2>Доставка по РФ</h2>
+    <div class="info-card">
+      <ul>
+        <li>Почта России</li>
+        <li>5post</li>
+      </ul>
+      <br>
+      <p><strong>Возможен самовывоз:</strong> ЮВАО, м. Печатники</p>
+      <br>
+      <p><small>Стоимость доставки зависит от: габаритов посылки, веса, удаленности региона. Оплачивается отдельно.</small></p>
+    </div>
+  </section>
+
+  <a href="#order" class="floating-cta">Сделать заказ</a>
+
+  <div class="modal" id="imageModal" onclick="closeModal()">
+    <img id="modalImg" src="" alt="Увеличенное фото">
+  </div>
+
+  <script>
+    // Меню
+    const sideNav = document.getElementById('sideNav');
+    const overlay = document.getElementById('overlay');
+    const menuOpen = document.getElementById('menuOpen');
+    const menuClose = document.getElementById('menuClose');
+    const navLinks = document.querySelectorAll('.side-nav a');
+
+    function openNavigation() {
+      sideNav.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    function closeNavigation() {
+      sideNav.classList.remove('active');
+      overlay.classList.remove('active');
+    }
+
+    menuOpen.addEventListener('click', openNavigation);
+    menuClose.addEventListener('click', closeNavigation);
+    overlay.addEventListener('click', closeNavigation);
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', closeNavigation);
+    });
+
+    // Изменение цвета в виджете
+    function changeImage(imageSrc) {
+      const img = document.getElementById('previewImage');
+      img.style.opacity = '0';
+      setTimeout(() => {
+        img.src = imageSrc;
+        img.style.opacity = '1';
+      }, 150);
+    }
+
+    // Модальное окно
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+
+    function openModal(src) {
+      modalImg.src = src;
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+    }
+
+    // Плавное появление элементов при скролле
+    document.addEventListener("DOMContentLoaded", function() {
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15
+      };
+
+      const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.fade-in-section').forEach(section => {
+        observer.observe(section);
+      });
+    });
+  </script>
+</body>
+</html>
+
